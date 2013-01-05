@@ -66,6 +66,24 @@ tags : [JavaScript， types， jslang， dev]
 
 ### typeof Operator
 
+<table class="neat">
+    <thead>
+        <tr><th class='title'>Type</th><th class='title'>Result</th></tr>
+    </thead>
+    <tbody>
+        <tr><td>Undefined</td><td>'undefined'</td></tr>
+        <tr><td>Null</td><td class="red">'object'</td></tr>
+        <tr><td>Boolean</td><td>'boolean'</td></tr>
+        <tr><td>Number</td><td>'number'</td></tr>
+        <tr><td>String</td><td>'string'</td></tr>
+        <tr><td>Object</td><td>'object'</td></tr>
+        <tr><td>Array</td><td class="red">'object'</td></tr>
+        <tr><td>Date</td><td>'object'</td></tr>
+        <tr><td>RegExp</td><td>'object'</td></tr>
+        <tr><td>Function</td><td>'function'</td></tr>
+    </tbody>
+</table>
+
 * 尽管`typeof(null) === "object"`，但是它仍然是一个primitive value，但是ECMAScript.next中有可能[`typeof(null) === "null"`](http://wiki.ecmascript.org/doku.php?id=harmony:typeof_null)
 * [ECMA-262 11.4.3 typeof](http://bclary.com/2004/11/07/#a-11.4.3)
 

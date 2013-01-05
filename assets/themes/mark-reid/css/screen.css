@@ -148,8 +148,8 @@ table.neat {
 }
 table.neat tr { text-align: center; }
 table.neat th { font-weight: normal; background-color: #eeeeee; }
-table.neat td { background-color: white; }
-table.neat th.title { border-bottom: 1px solid gray; border-top: 1px solid gray; vertical-align: bottom; background-color: lightgrey; }
+table.neat td { background-color: White; border-bottom: 1px #E5E5E5 solid }
+table.neat th.title { border-bottom: 1px solid gray; border-top: 1px solid gray; vertical-align: bottom; background-color: #6E6E6E; }
 caption { 
 	color: #333;
 	font-size: 0.875em;

@@ -9,14 +9,14 @@ pygments: true
 # Themes are encouraged to use these universal variables 
 # so be sure to set them if your theme uses them.
 #
-title : Jekyll Bootstrap
+title : Baidu Tongji FE
 tagline: Site Tagline
 author :
   name : tongji fe
   email : tongji@baidu.com
   github : tongji
   twitter : tongji
-  feedburner : feedname
+  feedburner : tongji
 
 # The production_url is only used when full-domain names are needed
 # such as sitemap.txt 
@@ -79,7 +79,7 @@ JB :
   # Set 'provider' to false to turn commenting off globally.
   #
   comments :
-    provider : disqus
+    provider : 
     disqus :
       short_name : jekyllbootstrap
     livefyre :
