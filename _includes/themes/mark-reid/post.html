@@ -9,7 +9,7 @@
   {{ content }}
 
   <address class="signature">
-    <a class="author" href="{{ HOME_PATH }}">{% if page.author.name %}{{ page.author.name }}{% else %}{{ site.author.name }}{% endif %}</a> 
+    <a class="author" href="{{ HOME_PATH }}">{% if page.author.name %}{{ page.author.name }}{% else %}{{ site.author.name }}{% endif %}</a>
     <span class="date">{{ page.date | date_to_long_string }}</span>
     <span class="location">{{ page.location }}</span>
   </address>

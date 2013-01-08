@@ -9,7 +9,7 @@ author :
 ---
 {% include JB/setup %}
 
-作为一个JavaScript前端开发工程师，你可能已经很熟悉[apply](http://ecma262-5.com/ELS5_HTML.htm#Section_15.3.4.3)的这种使用方法，但是当`apply`遇到数组时，还会有其它一些你可能不知道的使用方法。
+前端开发工程师应该已经都很熟悉[apply](http://ecma262-5.com/ELS5_HTML.htm#Section_15.3.4.3)的这种使用方法，但是当`apply`遇到数组时，还会有其它一些你可能不知道的使用方法。
 
 ## apply 方法
 
