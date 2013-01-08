@@ -9,9 +9,9 @@ tags : [JavaScript， types， jslang， dev]
 
 ## Agenda
 
-* 常用类型
-* 常用类型之间的隐式和显示转换
-* 类型转换的性能开销测试
+1. 常用类型；<br/>
+2. 常用类型之间的隐式和显示转换；<br/>
+3. 类型转换的性能开销测试
 
 ## Quiz
 
@@ -44,7 +44,7 @@ tags : [JavaScript， types， jslang， dev]
 
 ## JavaScript Types
 
-### Primitive Type:
+### Primitive Types
 
 * Null: null
 * Undefined: undefined
@@ -124,8 +124,6 @@ tags : [JavaScript， types， jslang， dev]
 * Object.prototype.valueOf()方法只是简单的返回对象本身；
 * Object.prototype.toString()方法默认会返回'[object' + [[Class]] + ']'；
 * 但是，我们经常需要overriden它们默认的行为
-
-
 * [valueOf && toString sample](http://jsfiddle.net/starandtina/3VPxq/)
 * [15.2.4.4 Object.prototype.valueOf()](http://bclary.com/2004/11/07/#a-15.2.4.4)
 * [ECMA-262 15.2.4.2 Object.prototype.toString](http://bclary.com/2004/11/07/#a-15.2.4.2)
