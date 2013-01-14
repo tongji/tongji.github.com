@@ -1,7 +1,7 @@
 ---
 layout: post
 title: "JavaScript Types"
-description: ""
+description: "JavaScript Types"
 category : jslang
 tags : [JavaScript， types， jslang， dev]
 ---
