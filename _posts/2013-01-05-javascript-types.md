@@ -9,8 +9,8 @@ tags : [JavaScript， types， jslang， dev]
 
 ## Agenda
 
-1. 常用类型；<br/>
-2. 常用类型之间的隐式和显示转换；<br/>
+1. 常用类型；  
+2. 常用类型之间的隐式和显示转换；  
 3. 类型转换的性能开销测试
 
 ## Quiz
