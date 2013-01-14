@@ -7,7 +7,7 @@ tags : [JavaScript， types， jslang， dev]
 ---
 {% include JB/setup %}
 
-* 1Effective JavaScript(David Herman)
+* Effective JavaScript(David Herman)
 * High-performance JavaScript(Nicholas Zakas)
 * Maintainable JavaScript(Nicholas Zakas)
 * Principles of Object-Oriented Programming in JavaScript
