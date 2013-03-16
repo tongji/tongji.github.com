@@ -19,3 +19,4 @@ tags : [JavaScript， types， jslang， dev]
 * JavaScript Enlightenment(Cody Lindley)
 * Secrets of the JavaScript Ninja(John Resig)
 * [Learning JavaScript Design Patterns(Addy Osmani)](http://addyosmani.com/resources/essentialjsdesignpatterns/book/)
+* [Writing Modular JavaScript With AMD, CommonJS & ES Harmony](http://addyosmani.com/writing-modular-js/)
