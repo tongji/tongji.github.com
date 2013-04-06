@@ -1,6 +1,6 @@
 ---
 layout: post
-title: "JavaScript closures"
+title: "JavaScript 闭包"
 description: "JavaScript 闭包"
 category: 
 tags: ["JavaScript", "闭包", "closure", "js-lang", "dev"]
@@ -128,26 +128,107 @@ An execution context is an abstract concept used by the ECMSScript specification
 
 当一个JavaScript函数被调用时，它就进入了一个执行上下文，如果另外一个函数被调用（或是同样的函数被递归调用），一个新的执行上下文就会被创建，同时在该函数的调用过程中，会始终在该执行上下文中。当函数调用返回时，就会返回至原先的执行上下文中。因此，JavaScript的执行会形成一个执行上下文栈。
 
-When an execution context is created a number of things happen in a defined order. First, in the execution context of a function, an "Activation" object is created. The activation object is another specification mechanism. It can be considered as an object because it ends up having accessible named properties, but it is not a normal object as it has no prototype (at least not a defined prototype) and it cannot be directly referenced by javascript code.
-当创建一个执行上下文时，会进行如下的操作：
+当创建一个执行上下文时，会按顺序进行如下的操作：
 
-1. 首先，在函数的上下文中，会创建一个`激活对象`。激活对象
+1. 首先，在函数的上下文中，会创建一个`激活对象`。激活对象是一种与规范相关的内部实现。你可以把它当做一个对象，是因为它也拥有可访问的命名属性，但是它与普通的对象不同的地方在于，它并没有prototype，并且你不能通过JavaScript代码直接访问；
 
-The next step in the creation of the execution context for a function call is the creation of an arguments object, which is an array-like object with integer indexed members corresponding with the arguments passed to the function call, in order. It also has length and callee properties (which are not relevant to this discussion, see the spec for details). A property of the Activation object is created with the name "arguments" and a reference to the arguments object is assigned to that property.
+2. 接下来的一步是创建`arguments`对象。`arguments`是一种类数组的整数数值索引对象，它的值与实参一一对应。`arguments`也有拥有[`length`和`callee`属性](http://bclary.com/2004/11/07/#a-10.1.8)。初始化`激活对象`时会创建一个`arguments`属性，其值为该'arguments'对象；
 
-Next the execution context is assigned a scope. A scope consists of a list (or chain) of objects. Each function object has an internal [[scope]] property (which we will go into more detail about shortly) that also consists of a list (or chain) of objects. The scope that is assigned to the execution context of a function call consists of the list referred to by the [[scope]] property of the corresponding function object with the Activation object added at the front of the chain (or the top of the list).
+3. 接下来，会创建函数执行上下文的作用域链，该作用域链上包括一系列的对象。每一个函数对象都有一个内部的`[[scope]]`属性，函数执行上下文的作用域链在函数调用时创建出来，它包括了`激活对象`和该`[[scope]]'属性上的对象，并且`激活对象`是被添加在链的最前端的；
 
-Then the process of "variable instantiation" takes place using an object that ECMA 262 refers to as the "Variable" object. However, the Activation object is used as the Variable object (note this, it is important: they are the same object). Named properties of the Variable object are created for each of the function's formal parameters, and if arguments to the function call correspond with those parameters the values of those arguments are assigned to the properties (otherwise the assigned value is undefined). Inner function definitions are used to create function objects which are assigned to properties of the Variable object with names that correspond to the function name used in the function declaration. The last stage of variable instantiation is to create named properties of the Variable object that correspond with all the local variables declared within the function.
+4. 之后就是[变量初始化](http://bclary.com/2004/11/07/#a-10.1.3)的过程。要注意的是，这个阶段是通用的行为，与上下文类型无关（不管是全局上下文还是函数上下文都是一致的）。在执行代码之前，进入函数执行上下文，`激活对象`会充当变量对象，同时被一些属性填充：
 
-The properties created on the Variable object that correspond with declared local variables are initially assigned undefined values during variable instantiation, the actual initialisation of local variables does not happen until the evaluation of the corresponding assignment expressions during the execution of the function body code.
 
-It is the fact that the Activation object, with its arguments property, and the Variable object, with named properties corresponding with function local variables, are the same object, that allows the identifier arguments to be treated as if it was a function local variable.
+        1. 函数的形参：变量对象的一个属性，其属性名就是形参的名字，其值就是实参的值；对于没有传递的参数，其值为undefined；
+        2. 函数声明：变量对象的一个属性，其属性名和值都是函数对象创建出来的；如果变量对象已经包含了相同名字的属性，则替换它的值；
+        3. 变量声明：变量对象的一个属性，其属性名即为变量名，其值为undefined;如果变量名和已经声明的函数名或者函数的参数名相同，则不会影响已经存在的属性。
 
-Finally a value is assigned for use with the this keyword. If the value assigned refers to an object then property accessors prefixed with the this keyword reference properties of that object. If the value assigned (internally) is null then the this keyword will refer to the global object.
+`变量对象`上的那些与本地声明变量有关的属性，都只是初始化时候的`undefined`。直到代码执行阶段，它们才会真正的初始化。
 
-The global execution context gets some slightly different handling as it does not have arguments so it does not need a defined Activation object to refer to them. The global execution context does need a scope and its scope chain consists of exactly one object, the global object. The global execution context does go through variable instantiation, its inner functions are the normal top level function declarations that make up the bulk of javascript code. The global object is used as the Variable object, which is why globally declared functions become properties of the global object. As do globally declared variables.
+5. 最后是确定`this`值。一般是由函数的caller提供`this`，如果由call所提供的`this`不是对象（`null`也不是对象），那么`this`则指向全局对象。
 
-The global execution context also uses a reference to the global object for the this object.
+全局的执行上下文有一点不同的是它并没有`arguments`对象，所以它并不需要`激活对象`来引用它们。全局的执行上下文也是需要一个作用域链并且它的作用域链只包含一个对象，即全局对象。全局的执行上下文也会经历变量初始化阶段，它的内部函数定义是最本顶级的函数声明，由这些构成了JavaScript代码。在变量初始化阶段，全局对象会被当做`变量对象`，这也就是为什么全局的函数声明会被当做全局对象的属性的原因，全局变量声明也类似。
+
+全局执行上下文同时也使用了一个指向全局对象的引用来表示`this`。
+
+### 作用域链 和 [[scope]]
+
+The scope chain of the execution context for a function call is constructed by adding the execution context's Activation/Variable object to the front of the scope chain held in the function object's [[scope]] property, so it is important to understand how the internal [[scope]] property is defined.
+
+In ECMAScript functions are objects, they are created during variable instantiation from function declarations, during the evaluation of function expressions or by invoking the Function constructor.
+
+Function objects created with the Function constructor always have a [[scope]] property referring to a scope chain that only contains the global object.
+
+Function objects created with function declarations or function expressions have the scope chain of the execution context in which they are created assigned to their internal [[scope]] property.
+
+In the simplest case of a global function declaration such as:-
+
+function exampleFunction(formalParameter){
+    ...   // function body code
+}
+- the corresponding function object is created during the variable instantiation for the global execution context. The global execution context has a scope chain consisting of only the global object. Thus the function object that is created and referred to by the property of the global object with the name "exampleFunction" is assigned an internal [[scope]] property referring to a scope chain containing only the global object.
+
+A similar scope chain is assigned when a function expression is executed in the global context:-
+
+var exampleFuncRef = function(){
+    ...   // function body code
+}
+- except in this case a named property of the global object is created during variable instantiation for the global execution context but the function object is not created, and a reference to it assigned to the named property of the global object, until the assignment expression is evaluated. But the creation of the function object still happens in the global execution context so the [[scope]] property of the created function object still only contains the global object in the assigned scope chain.
+
+Inner function declarations and expressions result in function objects being created within the execution context of a function so they get more elaborate scope chains. Consider the following code, which defines a function with an inner function declaration and then executes the outer function:-
+
+function exampleOuterFunction(formalParameter){
+    function exampleInnerFuncitonDec(){
+        ... // inner function body
+    }
+    ...  // the rest of the outer function body.
+}
+
+exampleOuterFunction( 5 );
+The function object corresponding with the outer function declaration is created during variable instantiation in the global execution context so its [[scope]] property contains the one item scope chain with only the global object in it.
+
+When the global code executes the call to the exampleOuterFunction a new execution context is created for that function call and an Activation/Variable object along with it. The scope of that new execution context becomes the chain consisting of the new Activation object followed by the chain refereed to by the outer function object's [[scope]] property (just the global object). Variable instantiation for that new execution context results in the creation of a function object that corresponds with the inner function definition and the [[scope]] property of that function object is assigned the value of the scope from the execution context in which it was created. A scope chain that contains the Activation object followed by the global object.
+
+So far this is all automatic and controlled by the structure and execution of the source code. The scope chain of the execution context defines the [[scope]] properties of the function objects created and the [[scope]] properties of the function objects define the scope for their execution contexts (along with the corresponding Activation object). But ECMAScript provides the with statement as a means of modifying the scope chain.
+
+The with statement evaluates an expression and if that expression is an object it is added to the scope chain of the current execution context (in front of the Activation/Variable object). The with statement then executes another statement (that may itself be a block statement) and then restores the execution context's scope chainto what it was before.
+
+A function declaration could not be affected by a with statement as they result in the creation of function objects during variable instantiation, but a function expression can be evaluated inside a with statement:-
+
+/* create a global variable - y - that refers to an object:- */
+var y = {x:5}; // object literal with an - x - property
+function exampleFuncWith(){
+    var z;
+    /* Add the object referred to by the global variable - y - to the
+       front of he scope chain:-
+    */
+    with(y){
+        /* evaluate a function expression to create a function object
+           and assign a reference to that function object to the local
+           variable - z - :-
+        */
+        z = function(){
+            ... // inner function expression body;
+        }
+    }
+    ... 
+}
+
+/* execute the - exampleFuncWith - function:- */
+exampleFuncWith();
+When the exampleFuncWith function is called the resulting execution context has a scope chain consisting of its Activation object followed by the global object. The execution of the with statement adds the object referred to by the global variable y to the front of that scope chain during the evaluation of the function expression. The function object created by the evaluation of the function expression is assigned a [[scope]] property that corresponds with the scope of the execution context in which it is created. A scope chain consisting of object y followed by the Activation object from the execution context of the outer function call, followed by the global object.
+
+When the block statement associated with the with statement terminates the scope of the execution context is restored (the y object is removed), but the function object has been created at that point and its [[scope]] property assigned a reference to a scope chain with the y object at its head.
+
+Identifier Resolution
+
+Identifiers are resolved against the scope chain. ECMA 262 categorises this as a keyword rather than an identifier, which is not unreasonable as it is always resolved dependent on the this value in the execution context in which it is used, without reference to the scope chain.
+
+Identifier resolution starts with the first object in the scope chain. It is checked to see if it has a property with a name that corresponds with the identifier. Because the scope chain is a chain of objects this checking encompasses the prototype chain of that object (if it has one). If no corresponding value can be found on the first object in the scope chain the search progresses to the next object. And so on until one of the objects in the chain (or one of its prototypes) has a property with a name that corresponds with the identifier or the scope chain is exhausted.
+
+The operation on the identifier happens in the same way as the use of property accessors on objects described above. The object identified in the scope chain as having the corresponding property takes the place of the object in the property accessor and the identifier acts as a property name for that object. The global object is always at the end of the scope chain.
+
+As execution contexts associated with function calls will have the Activation/Variable object at the front of the chain, identifiers used in function bodies are effectively first checked to see whether they correspond with formal parameters, inner function declaration names or local variables. Those would be resolved as named properties of the Activation/Variable object.
 
 ## 闭包
 
