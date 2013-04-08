@@ -164,11 +164,13 @@ ToPrimitive内部方法主要用于将对象类型转换为原生类型.
 
 * 每个对象都有一个内部方法[[DefaultValue]]；
 * 如果hint为NUMBER_HINT
+
     1. 如果存在valueOf方法且可调用，那么立即执行它，否则跳到3；
     2. 如果Result(1)返回是primitive value，则返回该值；
     3. 如果存在toString方法且可调用，那么立即执行它，否则跳到5；
     4. 如果Result(3)返回的是primitive value，则返回该值；
     5. 抛出TyperError
+
 * 如果hint为STRING_HINT，过程与上述相反；
 * [ToPrimitive sample](http://jsfiddle.net/starandtina/hanKB/)
 * [ECMA-262 9.1 ToPrimitive](http://bclary.com/2004/11/07/#a-9.1)
