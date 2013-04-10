@@ -224,15 +224,14 @@ A function declaration could not be affected by a with statement as they result 
 
 当与`with`语句相关的block执行完毕时，作用域链会恢复至调用`with`前状态（移除`y`），但是此时`z`的作用域链中仍然包含'y'，并且始终在最前面。
 
-### 标识符解析
+### [标识符解析](http://bclary.com/2004/11/07/#a-10.1.4)
 
-Identifiers are resolved against the scope chain. ECMA 262 categorises this as a keyword rather than an identifier, which is not unreasonable as it is always resolved dependent on the this value in the execution context in which it is used, without reference to the scope chain.
+作用域链就是一条变量对象的链，它和执行上下文有关，在解析标识符时，我们就会遍历它进行变量查询。ECMAScript将`this`定义为keyword而不是标识符，我们可以根据所处的执行上下文从而确定`this`，并且它与作用域链是无关的。
 
-Identifier resolution starts with the first object in the scope chain. It is checked to see if it has a property with a name that corresponds with the identifier. Because the scope chain is a chain of objects this checking encompasses the prototype chain of that object (if it has one). If no corresponding value can be found on the first object in the scope chain the search progresses to the next object. And so on until one of the objects in the chain (or one of its prototypes) has a property with a name that corresponds with the identifier or the scope chain is exhausted.
+标识符解析从作用域链中的第一个对象开始。检查该对象是否拥有与标识符相同的属性。由于作用域链是一条对象链，所以对象上的标识符检查也会涉及到对象原型链的。如果没有在第一个对象上无法找到相应的值，会继续从作用域链中的下一个对象开始，直到在作用域对象链中找到与标识符相同的属性或者是到达作用域的最顶层全局对象。
 
-The operation on the identifier happens in the same way as the use of property accessors on objects described above. The object identified in the scope chain as having the corresponding property takes the place of the object in the property accessor and the identifier acts as a property name for that object. The global object is always at the end of the scope chain.
-
-As execution contexts associated with function calls will have the Activation/Variable object at the front of the chain, identifiers used in function bodies are effectively first checked to see whether they correspond with formal parameters, inner function declaration names or local variables. Those would be resolved as named properties of the Activation/Variable object.
+与函数调用相关的执行上下文都会有一个激活对象与之相关，在识别函数内的标识符时会首先去检查它们是否与该函数的形式参数、内部函数声明或本地变量
+相关，而这些都会被当做当前的激活对象的命名属性去解析。
 
 ## 闭包
 
