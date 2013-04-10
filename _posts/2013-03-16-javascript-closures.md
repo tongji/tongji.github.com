@@ -153,74 +153,78 @@ An execution context is an abstract concept used by the ECMSScript specification
 
 ### 作用域链 和 [[scope]]
 
-The scope chain of the execution context for a function call is constructed by adding the execution context's Activation/Variable object to the front of the scope chain held in the function object's [[scope]] property, so it is important to understand how the internal [[scope]] property is defined.
+作用域链与内部函数息息相关，它其实就是所有内部上下文的变量对象列表。函数调用执行上下文的作用域链是在函数调用的时候创建出来的，它包含了活跃对象和该函数的内部`[[scope]]`属性。
 
-In ECMAScript functions are objects, they are created during variable instantiation from function declarations, during the evaluation of function expressions or by invoking the Function constructor.
+在ECMAScript中，函数也是对象，它们可以在变量初始化时通过函数声明创建出来，或者是通过执行函数表达式或Function constructor创建。、
+使用Function constructor创建的函数对象始终会有一个只包含全局对象的`[[scope]]`属性。
+使用函数声明或函数表达式创建的函数对象，它的`[[scope]]`属性为它所在的执行上下文的作用域链。
+以最简单的全局函数声明为例：
 
-Function objects created with the Function constructor always have a [[scope]] property referring to a scope chain that only contains the global object.
+    function exampleFunction(formalParameter){
+        ...   // function body code
+    }
 
-Function objects created with function declarations or function expressions have the scope chain of the execution context in which they are created assigned to their internal [[scope]] property.
 
-In the simplest case of a global function declaration such as:-
-
-function exampleFunction(formalParameter){
-    ...   // function body code
-}
-- the corresponding function object is created during the variable instantiation for the global execution context. The global execution context has a scope chain consisting of only the global object. Thus the function object that is created and referred to by the property of the global object with the name "exampleFunction" is assigned an internal [[scope]] property referring to a scope chain containing only the global object.
+该函数对象是在全局执行上下文的变量初始化阶段创建的，而全局执行上下文的作用域链只包含全局对象。因此创建该函数对象时，它的`[[scope]]`属性只包含它所在的执行上下文中的全局对象。
 
 A similar scope chain is assigned when a function expression is executed in the global context:-
+在全局上下文中执行函数表达式，也是类似的：
 
-var exampleFuncRef = function(){
-    ...   // function body code
-}
-- except in this case a named property of the global object is created during variable instantiation for the global execution context but the function object is not created, and a reference to it assigned to the named property of the global object, until the assignment expression is evaluated. But the creation of the function object still happens in the global execution context so the [[scope]] property of the created function object still only contains the global object in the assigned scope chain.
-
-Inner function declarations and expressions result in function objects being created within the execution context of a function so they get more elaborate scope chains. Consider the following code, which defines a function with an inner function declaration and then executes the outer function:-
-
-function exampleOuterFunction(formalParameter){
-    function exampleInnerFuncitonDec(){
-        ... // inner function body
+    var exampleFuncRef = function(){
+        ...   // function body code
     }
-    ...  // the rest of the outer function body.
-}
 
-exampleOuterFunction( 5 );
-The function object corresponding with the outer function declaration is created during variable instantiation in the global execution context so its [[scope]] property contains the one item scope chain with only the global object in it.
+唯一不同的地方在于，该函数表达式的属性是在变量初始化阶段创建，但是它的该函数对象并没有真创建，直到函数执行阶段。
 
-When the global code executes the call to the exampleOuterFunction a new execution context is created for that function call and an Activation/Variable object along with it. The scope of that new execution context becomes the chain consisting of the new Activation object followed by the chain refereed to by the outer function object's [[scope]] property (just the global object). Variable instantiation for that new execution context results in the creation of a function object that corresponds with the inner function definition and the [[scope]] property of that function object is assigned the value of the scope from the execution context in which it was created. A scope chain that contains the Activation object followed by the global object.
+在函数上下文中所创建的内部函数声明和函数表达式对象会拥有更复杂的作用域链。看看下面的代码，它定义了一个拥有内部函数的函数，之后立即执行该函数：
+    function exampleOuterFunction(formalParameter){
+        function exampleInnerFuncitonDec(){
+            ... // inner function body
+        }
+        ...  // the rest of the outer function body.
+    }
 
-So far this is all automatic and controlled by the structure and execution of the source code. The scope chain of the execution context defines the [[scope]] properties of the function objects created and the [[scope]] properties of the function objects define the scope for their execution contexts (along with the corresponding Activation object). But ECMAScript provides the with statement as a means of modifying the scope chain.
+    exampleOuterFunction( 5 );
 
-The with statement evaluates an expression and if that expression is an object it is added to the scope chain of the current execution context (in front of the Activation/Variable object). The with statement then executes another statement (that may itself be a block statement) and then restores the execution context's scope chainto what it was before.
+外部函数声明所创建的函数对象是在全局上下文中创建的，所以它的`[[scope]]`属性只包含全局对象一个。
+
+当执行该外部函数时，与内部函数相关的一个新的函数执行上下文会被创建，并伴随着一个`激活对象`。新的执行上下文的作用域链包含了该`激活对象`和外部函数的`[[scope]]`属性所指向的作用域链（只包含一个全局对象）。
+在内部函数的变量初始化阶段，会创建与该内部函数声明相关的函数对象，并且该函数对象的`[[scope]]`属性会包含创建该内部函数的执行上下文的作用域链。
+
+到目前为止，所有的这一切都是由代码的执行和结构自动控制的。上层执行上下文的作用域链定义了函数对象的`[[scope]]`属性，而`[[scope]]`属性定义了执行上下文的作用域链(与相应的激活对象一起)。同时ECMAScript也提供了`with`和`catch`去修改作用域链。
+
+[`with`语句](http://bclary.com/2004/11/07/#a-9.9)会将它的参数当做一个表达式执行，如果该表达式可以转化为对象，则将它添加到当前执行上下文的作用域链的最前面，之后`with`会执行它所包含的语句（通过是一个block语句），结束执行后，会从作用域链中移除该表达式对象，恢复作用域链至之前的样子。
 
 A function declaration could not be affected by a with statement as they result in the creation of function objects during variable instantiation, but a function expression can be evaluated inside a with statement:-
+`with`中的函数声明是不会被`with`所影响的，因为它们是在变量初始化阶段就创建了函数对象，但是函数表达式则会受到影响，因为函数表达示的执行是在`with`中完成的。如下例：
 
-/* create a global variable - y - that refers to an object:- */
-var y = {x:5}; // object literal with an - x - property
-function exampleFuncWith(){
-    var z;
-    /* Add the object referred to by the global variable - y - to the
-       front of he scope chain:-
-    */
-    with(y){
-        /* evaluate a function expression to create a function object
-           and assign a reference to that function object to the local
-           variable - z - :-
+    /* create a global variable - y - that refers to an object:- */
+    var y = {x:5}; // object literal with an - x - property
+    function exampleFuncWith(){
+        var z;
+        /* Add the object referred to by the global variable - y - to the
+           front of he scope chain:-
         */
-        z = function(){
-            ... // inner function expression body;
+        with(y){
+            /* evaluate a function expression to create a function object
+               and assign a reference to that function object to the local
+               variable - z - :-
+            */
+            z = function(){
+                ... // inner function expression body;
+            }
         }
+        ... 
     }
-    ... 
-}
 
-/* execute the - exampleFuncWith - function:- */
-exampleFuncWith();
-When the exampleFuncWith function is called the resulting execution context has a scope chain consisting of its Activation object followed by the global object. The execution of the with statement adds the object referred to by the global variable y to the front of that scope chain during the evaluation of the function expression. The function object created by the evaluation of the function expression is assigned a [[scope]] property that corresponds with the scope of the execution context in which it is created. A scope chain consisting of object y followed by the Activation object from the execution context of the outer function call, followed by the global object.
+    /* execute the - exampleFuncWith - function:- */
+    exampleFuncWith();
 
-When the block statement associated with the with statement terminates the scope of the execution context is restored (the y object is removed), but the function object has been created at that point and its [[scope]] property assigned a reference to a scope chain with the y object at its head.
+当`exampleFuncWith`执行时，当前执行上下文的作用域链包含它的激活对象和全局对象。当执行内部的函数表达式`z`时，`with`的执行会将全局的`y`对象加入至作用域链的最前端。同时，由`z`所创建的函数表达式对象的`[[scope]]`属性则包含了创建它的执行上下文的作用域链，该作用域链包含了对象`[y, exampleFuncWith的激活对象, 全局对象]`。
 
-Identifier Resolution
+当与`with`语句相关的block执行完毕时，作用域链会恢复至调用`with`前状态（移除`y`），但是此时`z`的作用域链中仍然包含'y'，并且始终在最前面。
+
+### 标识符解析
 
 Identifiers are resolved against the scope chain. ECMA 262 categorises this as a keyword rather than an identifier, which is not unreasonable as it is always resolved dependent on the this value in the execution context in which it is used, without reference to the scope chain.
 
