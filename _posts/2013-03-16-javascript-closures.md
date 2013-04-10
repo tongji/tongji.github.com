@@ -119,10 +119,7 @@ JavaScript中的对象的prototype本身也是对象（之后会有详细的解�
 
 ### 执行上下文
 
-An execution context is an abstract concept used by the ECMSScript specification (ECMA 262 3rd edition) to define the behaviour required of ECMAScript implementations. The specification does not say anything about how execution contexts should be implemented but execution contexts have associated attributes that refer to specification defined structures so they might be conceived (and even implemented) as objects with properties, though not public properties.
-
 执行上下文是一个抽象的概念，是[ECMAScript规范][ECMAScript规范]用于定义ECMAScript实现所需要的行为。ECMAScript规范并没有从技术实现的角度定义执行上下文应该如何实现以及它的具体结构和类型，这是实现规范的ECMAScript引擎所要考虑的问题。但是涉及到与规范的结构和类型相关的执行上下文的相应属性，ECMAScript引擎可以构想为对象属性（甚至是实现），但不一定是公共属性。
-
 
 所有的JavaScript代码都是在一个执行上下文中执行的。全局代码（在程序级别上执行的，如外部JS文件或者内联的JS代码）是在全局执行上下文中执行的。而函数的每次调用都与一个与之关联的执行上下文。使用`eval`函数执行的代码也有自己不同的执行上下文。执行上下文的详细信息可以参考[Entering An Execution Context](http://bclary.com/2004/11/07/#a-10.2)
 
@@ -240,7 +237,6 @@ A function declaration could not be affected by a with statement as they result 
 ## 闭包的副作用
 
 ## Internet Explorer的内存泄漏问题
-
 
 ## 参考
 
